@@ -1,41 +1,51 @@
-def mu(b, I, mu0, mu1):
-    """Recovery rate.
+class SIR:
 
-    """
-    # recovery rate, depends on mu0, mu1, b
-    mu = mu0 + (mu1 - mu0) * (b / (I + b))
-    return mu
+    def __init__(self, t_0, t_end, beta, A, d, nu, b, mu0, mu1):
+        self.t_0 = t_0
+        self.t_end = t_end
+        self.beta = beta
+        self.A = A
+        self.d = d
+        self.nu = nu
+        self.b = b
+        self.mu0 = mu0
+        self.mu1 = mu1
 
+    def mu(self, I):
+        """Recovery rate.
 
-def R0(beta, d, nu, mu1):
-    """
-    Basic reproduction number.
-    """
-    return beta / (d + nu + mu1)
+        """
+        # recovery rate, depends on mu0, mu1, b
+        mu = self.mu0 + (self.mu1 - self.mu0) * (self.b / (I + self.b))
+        return mu
 
+    def R0(self):
+        """
+        Basic reproduction number.
+        """
+        return self.beta / (self.d + self.nu + self.mu1)
 
-def h(I, mu0, mu1, beta, A, d, nu, b):
-    """
-    Indicator function for bifurcations.
-    """
-    c0 = b ** 2 * d * A
-    c1 = b * ((mu0 - mu1 + 2 * d) * A + (beta - nu) * b * d)
-    c2 = (mu1 - mu0) * b * nu + 2 * b * d * (beta - nu) + d * A
-    c3 = d * (beta - nu)
-    res = c0 + c1 * I + c2 * I ** 2 + c3 * I ** 3
-    return res
+    def h(self, I):
+        """
+        Indicator function for bifurcations.
+        """
+        c0 = self.b ** 2 * self.d * self.A
+        c1 = self.b * ((self.mu0 - self.mu1 + 2 * self.d) * self.A + (self.beta - self.nu) * self.b * self.d)
+        c2 = (self.mu1 - self.mu0) * self.b * self.nu + 2 * self.b * self.d * (self.beta - self.nu) + self.d * self.A
+        c3 = self.d * (self.beta - self.nu)
+        res = c0 + c1 * I + c2 * I ** 2 + c3 * I ** 3
+        return res
 
+    def integration_model(self, y, t):
+        S, I, R = y[:]
+        m = self.mu0 + (self.mu1 - self.mu0) * (self.b / (I + self.b))
 
-def dsdt(A, d, beta, S, I, R):
-    return A - d * S - (beta * S * I) / (S + I + R)
+        dSdt = self.A - self.d * S - (self.beta * S * I) / (S + I + R)
+        dIdt = - (self.d + self.nu) * I - m * I + (self.beta * S * I) / (S + I + R)
+        dRdt = m * I - self.d * R
 
+        return [dSdt, dIdt, dRdt]
 
-def didt(d, nu, m, beta, S, I, R):
-    return - (d + nu) * I - m * I + (beta * S * I) / (S + I + R)
-
-
-def drdt(m, I, d, R):
-    return m * I - d * R
 
 
 def model(t, y, mu0, mu1, beta, A, d, nu, b):
@@ -60,10 +70,10 @@ def model(t, y, mu0, mu1, beta, A, d, nu, b):
         hospital beds per 10,000 persons
     """
     S, I, R = y[:]
-    m = mu(b, I, mu0, mu1)
+    m = mu0 + (mu1 - mu0) * (b / (I + b))
 
-    dSdt = dsdt(A, d, beta, S, I, R)
-    dIdt = didt(d, nu, m, beta, S, I, R)
-    dRdt = drdt(m, I, d, R)
+    dSdt = A - d * S - (beta * S * I) / (S + I + R)
+    dIdt = - (d + nu) * I - m * I + (beta * S * I) / (S + I + R)
+    dRdt = m * I - d * R
 
     return [dSdt, dIdt, dRdt]
