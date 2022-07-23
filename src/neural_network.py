@@ -2,9 +2,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 import tensorflow as tf
-from keras.models import Sequential
-from keras import Input
-from keras.layers import Dense
+print("TensorFlow version:", tf.__version__)
 import pandas as pd
 import numpy as np
 import sklearn
@@ -18,7 +16,6 @@ import plotly.graph_objects as go
 class NeuralNetwork:
     x_train = None
     x_test = None
-
     y_train = None
     y_test = None
 
@@ -51,24 +48,27 @@ class NeuralNetwork:
         :return: sets the training and validation data of self
         """
         df = pd.read_csv(file_name)
+        x = df[['Susceptible', 'Infected', 'Recovered']]
+        y = df['Mu'].values
 
-        s = df['Susceptible']
-        i = df['Infected']
-        r = df['Recovered']
-
-        x_train, x_test, y_train, y_test = train_test_split(s, i, r, test_size=0.2, random_state=0)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+        self.x_train = x_train
         self.x_test = x_test
-        self.x_train = x_test
-        self.y_test = y_test
         self.y_train = y_train
+        self.y_test = y_test
 
     def fit(self):
         """
         :return:
         """
 
-        self.model.fit(self.x_train,  # input data
-                       self.x_test,  # target data
+        x = tf.convert_to_tensor(self.x_train)
+        y = tf.convert_to_tensor(self.y_train)
+
+        print(x)
+
+        self.model.fit(x,  # input data
+                       y,  # target data
                        batch_size=10,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
                        epochs=3,
@@ -80,14 +80,14 @@ class NeuralNetwork:
                        # ParameterServerStrategy.
                        callbacks=None,
                        # default=None, list of callbacks to apply during training. See tf.keras.callbacks
-                       validation_split=0.2,
+
                        # default=0.0, Fraction of the training data to be used as validation data. The model will set
                        # apart this fraction of the training data, will not train on it, and will evaluate the loss
                        # and any model metrics on this data at the end of each epoch.
                        shuffle=True,
                        # default=True, Boolean (whether to shuffle the training data before each epoch) or str (for
                        # 'batch').
-                       class_weight={0: 0.3, 1: 0.7},
+                       class_weight=None,
                        # default=None, Optional dictionary mapping class indices (integers) to a weight (float)
                        # value, used for weighting the loss function (during training only). This can be useful to
                        # tell the model to "pay more attention" to samples from an under-represented class.
@@ -97,7 +97,7 @@ class NeuralNetwork:
                        initial_epoch=0,
                        # Integer, default=0, Epoch at which to start training (useful for resuming a previous
                        # training run).
-                       steps_per_epoch=None,
+                       steps_per_epoch=50,
                        # Integer or None, default=None, Total number of steps (batches of samples) before declaring
                        # one epoch finished and starting the next epoch. When training with input tensors such as
                        # TensorFlow data tensors, the default None is equal to the number of samples in your dataset
@@ -129,9 +129,9 @@ class NeuralNetwork:
         """
         :return:
         """
-        x1 = self.model.predict(self.x_train)
-        x2 = self.model.predict(self.x_test)
-        y1 = self.model.predict(self.y_train)
-        y2 = self.model.predict(self.y_test)
+        x1 = self.model.predict(self.s_train)
+        x2 = self.model.predict(self.s_test)
+        y1 = self.model.predict(self.i_train)
+        y2 = self.model.predict(self.i_test)
 
         return x1, x2, y1, y2

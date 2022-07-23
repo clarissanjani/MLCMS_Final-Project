@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.integrate import solve_ivp
-from model import *
-import csv
+from src.model import *
 
 
 def prepare_csv(file):
@@ -42,7 +41,7 @@ def synthesizeSIRData(beta, a, d, nu, b, mu0, mu1, t_0, t_end, y0):
     :param t_0: start time of the simulation
     :param t_end: end time of the simulation
     :param y0: starting values for the simulation
-    :return: a list containing the values of S,I and R over t_end-t0 time steps
+    :return: return a Pandas.DataFrame containing the values of S,I,R and the Mu-function over t_end-t0 time steps
     """
     # if these error tolerances are set too high, the solution will be qualitatively (!) wrong
     rtol = 1e-8
@@ -52,16 +51,23 @@ def synthesizeSIRData(beta, a, d, nu, b, mu0, mu1, t_0, t_end, y0):
     time = np.linspace(t_0, t_end, NT)
     sol = solve_ivp(model, t_span=[time[0], time[-1]], y0=y0, t_eval=time, args=(mu0, mu1, beta, a, d, nu, b),
                     method='LSODA', rtol=rtol, atol=atol)
-    return sol
+
+    df = pd.DataFrame(sol.y.transpose())
+
+    mu = []
+    for index, row in df.iterrows():
+        mu.append(mu0 + (mu1 - mu0) * (b / (row[1] + b)))
+    df.insert(0, "Mu", mu)
+
+    df.set_axis(['Mu','Susceptible', 'Infected', 'Recovered'], axis=1, inplace=True)
+
+    return df
 
 
-def generateSIRFile(data, file_name):
+def generateSIRFile(df, file_name):
     """
     :param data: a list containing the values of S, I and R over a certain time
     :param file_name: the name of the output file
     :return: a file containing the values from the data parameter
     """
-    with open(file_name, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Susceptible', 'Infected', 'Recovered'])
-        writer.writerows(data.transpose())
+    df.to_csv(file_name)
