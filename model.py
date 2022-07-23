@@ -26,6 +26,18 @@ def h(I, mu0, mu1, beta, A, d, nu, b):
     return res
 
 
+def dsdt(A, d, beta, S, I, R):
+    return A - d * S - (beta * S * I) / (S + I + R)
+
+
+def didt(d, nu, m, beta, S, I, R):
+    return - (d + nu) * I - m * I + (beta * S * I) / (S + I + R)
+
+
+def drdt(m, I, d, R):
+    return m * I - d * R
+
+
 def model(t, y, mu0, mu1, beta, A, d, nu, b):
     """
     SIR model including hospitalization and natural death.
@@ -50,8 +62,8 @@ def model(t, y, mu0, mu1, beta, A, d, nu, b):
     S, I, R = y[:]
     m = mu(b, I, mu0, mu1)
 
-    dSdt = A - d * S - (beta * S * I) / (S + I + R)
-    dIdt = - (d + nu) * I - m * I + (beta * S * I) / (S + I + R)
-    dRdt = m * I - d * R
+    dSdt = dsdt(A, d, beta, S, I, R)
+    dIdt = didt(d, nu, m, beta, S, I, R)
+    dRdt = drdt(m, I, d, R)
 
     return [dSdt, dIdt, dRdt]
