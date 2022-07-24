@@ -3,6 +3,11 @@ Final project on Machine Learning in Crowd Modeling &amp; Simulation Praktikum
 
 # Project
 - /data    ... test data
+  - CombinedSir.csv    ... SIR data for multiple runs of solve_ivp with different values for b
+  - NormalizedSIR.csv  ... combined and normalized (to [0,1]) SIR data, use this for best results
+  - SIR.csv            ... simple SIR data for a fixed value of b
+  - covid_japan.csv    ... real covid data fram Japan, not yet used
+  - wbdata_population_pyramid.csv ... complementary to the covid data, not yet used
 - /src     ... source files
   - data.py            ... import and synthesize data
   - integration.py     ... integration methods: euler, runge-kutta
