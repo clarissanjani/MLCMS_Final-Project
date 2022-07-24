@@ -69,7 +69,7 @@ class NeuralNetwork:
                        y,  # target data
                        batch_size=10,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
-                       epochs=2,
+                       epochs=5,
                        # default=1, Number of epochs to train the model. An epoch is an iteration over the entire x
                        # and y data provided
                        verbose='auto',
@@ -82,7 +82,7 @@ class NeuralNetwork:
                        # default=0.0, Fraction of the training data to be used as validation data. The model will set
                        # apart this fraction of the training data, will not train on it, and will evaluate the loss
                        # and any model metrics on this data at the end of each epoch.
-                       shuffle=True,
+                       shuffle=False,
                        # default=True, Boolean (whether to shuffle the training data before each epoch) or str (for
                        # 'batch').
                        class_weight=None,
@@ -95,7 +95,7 @@ class NeuralNetwork:
                        initial_epoch=0,
                        # Integer, default=0, Epoch at which to start training (useful for resuming a previous
                        # training run).
-                       steps_per_epoch=10,
+                       steps_per_epoch=None,
                        # Integer or None, default=None, Total number of steps (batches of samples) before declaring
                        # one epoch finished and starting the next epoch. When training with input tensors such as
                        # TensorFlow data tensors, the default None is equal to the number of samples in your dataset
@@ -127,9 +127,7 @@ class NeuralNetwork:
         """
         :return:
         """
-        x1 = self.model.predict(self.s_train)
-        x2 = self.model.predict(self.s_test)
-        y1 = self.model.predict(self.i_train)
-        y2 = self.model.predict(self.i_test)
+        x1 = self.model.predict(self.x_train)
+        x2 = self.model.predict(self.x_test)
 
-        return x1, x2, y1, y2
+        return x1, x2

@@ -56,13 +56,51 @@ def synthesizeSIRData(beta, a, d, nu, b, mu0, mu1, t_0, t_end, y0):
 
     mu = []
     for index, row in df.iterrows():
-        mu.append(mu0 + (mu1 - mu0) * (b / (row[1] + b)))
+        mu.append(mu0 + (mu1 - mu0) * (b / (row[1] + b)) * row[1])
     df.insert(0, "Mu", mu)
 
     df.set_axis(['Mu','Susceptible', 'Infected', 'Recovered'], axis=1, inplace=True)
 
     return df
 
+def createDataSet(beta, a, d, nu, b, mu0, mu1, t_0, t_end, y0, delta1, delta2):
+    """
+    :param beta:
+    :param a:
+    :param d:
+    :param nu:
+    :param b:
+    :param mu0:
+    :param mu1:
+    :param t_0:
+    :param t_end:
+    :param y0:
+    :param delta1:
+    :param delta2:
+    :return: Synthesize data with multiple models for different values of b. Combine these dataframes into one large 
+    pandas dataframe. Train the ANN with this dataframe so that it's trained with multiple bifurcations.
+    """
+    df0 = synthesizeSIRData(beta, a, d, nu, b+delta1, mu0, mu1, t_0, t_end, y0)
+    df1 = synthesizeSIRData(beta, a, d, nu, b+delta2, mu0, mu1, t_0, t_end, y0)
+    df2 = synthesizeSIRData(beta, a, d, nu, b-delta1, mu0, mu1, t_0, t_end, y0)
+    df3 = synthesizeSIRData(beta, a, d, nu, b-delta2, mu0, mu1, t_0, t_end, y0)
+    df4 = synthesizeSIRData(beta, a, d, nu, b + 2*delta1, mu0, mu1, t_0, t_end, y0)
+    df5 = synthesizeSIRData(beta, a, d, nu, b + 2*delta2, mu0, mu1, t_0, t_end, y0)
+    df6 = synthesizeSIRData(beta, a, d, nu, b - 2*delta1, mu0, mu1, t_0, t_end, y0)
+    df7 = synthesizeSIRData(beta, a, d, nu, b - 2*delta2, mu0, mu1, t_0, t_end, y0)
+
+    return pd.concat([df0, df1, df2, df3, df4, df5, df6, df7], axis=0)
+
+def normalizeDataSet(dataFrame):
+    """
+    :param dataFrame: pandas data frame to normalize
+    :return: apply min-max feature scaling and return data frame
+    """
+    df = dataFrame.copy()
+    for column in df.columns:
+        df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
+
+    return df
 
 def generateSIRFile(df, file_name):
     """
