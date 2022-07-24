@@ -27,8 +27,8 @@ class NeuralNetwork:
         """
         self.model = tf.keras.Sequential(name='grayboxann')
         self.model.add(tf.keras.Input(shape=(3,)))
-        self.model.add(tf.keras.layers.Dense(4, activation='softplus', name='hiddenlayer1'))
-        self.model.add(tf.keras.layers.Dense(4, activation='softplus', name='hiddenlayer2'))
+        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer1'))
+        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer2'))
         self.model.add(tf.keras.layers.Dense(1, activation='sigmoid', name='outputlayer'))
 
         self.model.compile(optimizer='adam',
@@ -65,13 +65,11 @@ class NeuralNetwork:
         x = tf.convert_to_tensor(self.x_train)
         y = tf.convert_to_tensor(self.y_train)
 
-        print(x)
-
         self.model.fit(x,  # input data
                        y,  # target data
                        batch_size=10,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
-                       epochs=3,
+                       epochs=2,
                        # default=1, Number of epochs to train the model. An epoch is an iteration over the entire x
                        # and y data provided
                        verbose='auto',
@@ -97,7 +95,7 @@ class NeuralNetwork:
                        initial_epoch=0,
                        # Integer, default=0, Epoch at which to start training (useful for resuming a previous
                        # training run).
-                       steps_per_epoch=50,
+                       steps_per_epoch=10,
                        # Integer or None, default=None, Total number of steps (batches of samples) before declaring
                        # one epoch finished and starting the next epoch. When training with input tensors such as
                        # TensorFlow data tensors, the default None is equal to the number of samples in your dataset
