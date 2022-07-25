@@ -1,3 +1,5 @@
+import numpy as np
+
 class SIR:
 
     def __init__(self, t_0, t_end, beta, A, d, nu, b, mu0, mu1):
@@ -44,7 +46,7 @@ class SIR:
         dIdt = - (self.d + self.nu) * I - m * I + (self.beta * S * I) / (S + I + R)
         dRdt = m * I - self.d * R
 
-        return [dSdt, dIdt, dRdt]
+        return np.array([dSdt, dIdt, dRdt])
 
 
 
