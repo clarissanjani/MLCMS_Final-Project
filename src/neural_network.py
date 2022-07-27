@@ -64,7 +64,7 @@ class NeuralNetwork:
                        y,  # target data
                        batch_size=2,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
-                       epochs=3,
+                       epochs=100,
                        # default=1, Number of epochs to train the model. An epoch is an iteration over the entire x
                        # and y data provided
                        verbose='auto',

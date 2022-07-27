@@ -50,18 +50,40 @@ class SIR:
     
     def integration_model_ann(self, y, t, ann):
         
+        #(df[column] - df[column].min()) / (df[column].max() - df[column].min())
+        
         S, I, R = y[:]
         
-        m = ann.model.predict(y)
+        # Normalization:
         
-        #prediction_input = np.zeros((1, 3), dtype = 'float32')
-        #prediction_input[0][0] = S
-        #prediction_input[0][1] = I
-        #prediction_input[0][2] = R
+        S_norm = (S-194.612131) / (196.199362-194.612131)
+        I_norm = (I-0.030732) / (0.052602-0.030732)
+        R_norm = (R-3.433552) / (4.862474-3.433552)
+        
+        prediction_input = np.array([[S_norm, I_norm, R_norm]])     
+        prediction = ann.model.predict(prediction_input)[0][0]
+        
+        m = self.mu0 + (self.mu1 - self.mu0) * (self.b / (I + self.b))
+        
+        print("SIR: ", S, I, R)
+        print("Input: ", prediction_input)
+        print ("pred: ", prediction, "my: ", m, "rel: ", (prediction/m))
 
         dSdt = self.A - self.d * S - (self.beta * S * I) / (S + I + R)
-        dIdt = - (self.d + self.nu) * I - m + (self.beta * S * I) / (S + I + R)
-        dRdt = m - self.d * R
+        dIdt = - (self.d + self.nu) * I - prediction * I + (self.beta * S * I) / (S + I + R)
+        dRdt = prediction * I - self.d * R
+
+        return np.array([dSdt, dIdt, dRdt])
+    
+    def integration_model_mu(self, y, t, mu):
+        
+        #(df[column] - df[column].min()) / (df[column].max() - df[column].min())
+        
+        S, I, R = y[:]
+
+        dSdt = self.A - self.d * S - (self.beta * S * I) / (S + I + R)
+        dIdt = - (self.d + self.nu) * I - mu * I + (self.beta * S * I) / (S + I + R)
+        dRdt = mu * I - self.d * R
 
         return np.array([dSdt, dIdt, dRdt])
 
