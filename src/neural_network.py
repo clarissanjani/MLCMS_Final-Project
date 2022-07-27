@@ -2,15 +2,10 @@ import warnings
 
 warnings.filterwarnings("ignore")
 import tensorflow as tf
+
 print("TensorFlow version:", tf.__version__)
 import pandas as pd
-import numpy as np
-import sklearn
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import plotly
-import plotly.express as px
-import plotly.graph_objects as go
 
 
 class NeuralNetwork:
@@ -27,13 +22,13 @@ class NeuralNetwork:
         """
         self.model = tf.keras.Sequential(name='grayboxann')
         self.model.add(tf.keras.Input(shape=(3,), name='inputlayer'))
-        self.model.add(tf.keras.layers.Dense(10, activation='sigmoid', name='hiddenlayer1'))
-        self.model.add(tf.keras.layers.Dense(10, activation='sigmoid', name='hiddenlayer2'))
-        self.model.add(tf.keras.layers.Dense(1, activation='sigmoid', name='outputlayer'))
+        self.model.add(tf.keras.layers.Dense(8, activation='relu', name='hiddenlayer1'))
+        self.model.add(tf.keras.layers.Dense(8, activation='relu', name='hiddenlayer2'))
+        self.model.add(tf.keras.layers.Dense(1, activation='linear', name='outputlayer'))
 
         self.model.compile(optimizer='adam',
-                           loss='binary_crossentropy',
-                           metrics=['Accuracy', 'Precision', 'Recall'],
+                           loss='mse',
+                           metrics=['mse', 'mae'],
                            loss_weights=None,
                            weighted_metrics=None,
                            run_eagerly=None,
@@ -61,24 +56,15 @@ class NeuralNetwork:
         """
         :return:
         """
-        
-        # print("x_train: ") 
-        # print(self.x_train)
-        # print("x_test: ") 
-        # print(self.x_test)
-        # print("y_train: ") 
-        # print(self.y_train)
-        # print("y_test: ")
-        # print(self.y_test)
 
         x = tf.convert_to_tensor(self.x_train)
         y = tf.convert_to_tensor(self.y_train)
 
         self.model.fit(x,  # input data
                        y,  # target data
-                       batch_size=10,
+                       batch_size=2,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
-                       epochs=5,
+                       epochs=3,
                        # default=1, Number of epochs to train the model. An epoch is an iteration over the entire x
                        # and y data provided
                        verbose='auto',
@@ -113,7 +99,7 @@ class NeuralNetwork:
                        # Only relevant if validation_data is provided and is a tf.data dataset. Total number of steps
                        # (batches of samples) to draw before stopping when performing validation at the end of every
                        # epoch.
-                       validation_batch_size=None,
+                       validation_batch_size=40,
                        # Integer or None, default=None, Number of samples per validation batch. If unspecified,
                        # will default to batch_size.
                        validation_freq=3,
@@ -132,12 +118,11 @@ class NeuralNetwork:
                        # use process-based threading. If unspecified, use_multiprocessing will default to False.
                        )
 
-    def predict(self):
+    def predict(self, x):
         """
         :return:
         """
-        x1 = self.model.predict(self.x_train)
-        x2 = self.model.predict(self.x_test)
+        input = tf.convert_to_tensor(x)
+        mu = self.model.predict_step(input)
 
-        return x1, x2
-
+        return mu

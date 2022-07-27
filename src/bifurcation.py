@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
-from bifurcation import *
+from src.bifurcation import *
 
 """
 define system in terms of separated differential equations
