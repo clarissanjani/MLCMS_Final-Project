@@ -8,14 +8,25 @@ Final project on Machine Learning in Crowd Modeling &amp; Simulation Praktikum
   - SIR.csv            ... simple SIR data for a fixed value of b
   - covid_japan.csv    ... real covid data fram Japan, not yet used
   - wbdata_population_pyramid.csv ... complementary to the covid data, not yet used
+- /notebook_files      ... jupyter lab files
+  - euler_test.ipynb    ... tests for the euler integration method
+  - hopf.ipynb    Hopf bifurcation 
+  - runge-kutta_test.ipynb     ... Runge-Kutta integration method test
+  - sir_data.ipynb   ... used to synthesize and generate files with SIR data
 - /src     ... source files
+  - bifurcation.py     ... bifurcation analysis
   - data.py            ... import and synthesize data
   - integration.py     ... integration methods: euler, runge-kutta
   - model.py           ... SIR model
   - neural_network.py  ... setup neural network
-- sir_data.ipynb
-- euler_test.ipynb
-- setup_ann.ipynb
+  - utils.py
+- .gitignore  
+- README.md
+- Task2.ipynb
+- Task3.ipynb
+- Task4.ipynb
+- Task5.ipynb
+
 ## Requirements
 It is advised that a virtual environment is created where the dependencies are installed. To be able to select the venv in jupyter lab it might be necessary to install jupyter lab and IPython inside the venv.
 - Tensorflow 2.9.1:
