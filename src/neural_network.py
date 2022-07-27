@@ -27,8 +27,8 @@ class NeuralNetwork:
         """
         self.model = tf.keras.Sequential(name='grayboxann')
         self.model.add(tf.keras.Input(shape=(3,)))
-        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer1'))
-        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer2'))
+        self.model.add(tf.keras.layers.Dense(30, activation='softplus', name='hiddenlayer1'))
+        self.model.add(tf.keras.layers.Dense(30, activation='softplus', name='hiddenlayer2'))
         self.model.add(tf.keras.layers.Dense(1, activation='sigmoid', name='outputlayer'))
 
         self.model.compile(optimizer='adam',
@@ -51,14 +51,18 @@ class NeuralNetwork:
         x = df[['Susceptible', 'Infected', 'Recovered']]
         y = df['Mu'].values
 
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.1, random_state=0)
+        print(len(x_train))
         self.x_train = x_train
         self.x_test = x_test
         self.y_train = y_train
         self.y_test = y_test
 
-    def fit(self):
+    def fit(self, batch_size, epochs, steps_epoch):
         """
+        :param batch_size: number of samples per gradient update
+        :param epochs: number of epochs
+        :param steps_epoch: steps (batches of samples) before ending an epoch
         :return:
         """
 
@@ -67,9 +71,9 @@ class NeuralNetwork:
 
         self.model.fit(x,  # input data
                        y,  # target data
-                       batch_size=10,
+                       batch_size=batch_size,
                        # Number of samples per gradient update. If unspecified, batch_size will default to 32.
-                       epochs=5,
+                       epochs=epochs,
                        # default=1, Number of epochs to train the model. An epoch is an iteration over the entire x
                        # and y data provided
                        verbose='auto',
@@ -82,7 +86,7 @@ class NeuralNetwork:
                        # default=0.0, Fraction of the training data to be used as validation data. The model will set
                        # apart this fraction of the training data, will not train on it, and will evaluate the loss
                        # and any model metrics on this data at the end of each epoch.
-                       shuffle=False,
+                       shuffle=True,
                        # default=True, Boolean (whether to shuffle the training data before each epoch) or str (for
                        # 'batch').
                        class_weight=None,
@@ -95,7 +99,7 @@ class NeuralNetwork:
                        initial_epoch=0,
                        # Integer, default=0, Epoch at which to start training (useful for resuming a previous
                        # training run).
-                       steps_per_epoch=None,
+                       steps_per_epoch=steps_epoch,
                        # Integer or None, default=None, Total number of steps (batches of samples) before declaring
                        # one epoch finished and starting the next epoch. When training with input tensors such as
                        # TensorFlow data tensors, the default None is equal to the number of samples in your dataset
@@ -127,7 +131,7 @@ class NeuralNetwork:
         """
         :return:
         """
-        x1 = self.model.predict(self.x_train)
-        x2 = self.model.predict(self.x_test)
+        y1 = self.model.predict(self.x_train)
+        y2 = self.model.predict(self.x_test)
 
-        return x1, x2
+        return y1, y2
