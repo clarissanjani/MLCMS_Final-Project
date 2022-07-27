@@ -47,6 +47,21 @@ class SIR:
         dRdt = m * I - self.d * R
 
         return np.array([dSdt, dIdt, dRdt])
+    
+    def integration_model_ann(self, y, t, ann):
+        
+        S, I, R = y[:]
+        
+        prediction_input = np.zeros((1, 3), dtype = 'float32')
+        prediction_input[0][0] = S
+        prediction_input[0][1] = I
+        prediction_input[0][2] = R
+
+        dSdt = self.A - self.d * S - (self.beta * S * I) / (S + I + R)
+        dIdt = - (self.d + self.nu) * I - ann.model.predict(prediction_input)[0][0] + (self.beta * S * I) / (S + I + R)
+        dRdt = ann.model.predict(prediction_input)[0][0] - self.d * R
+
+        return np.array([dSdt, dIdt, dRdt])
 
 
 

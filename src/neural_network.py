@@ -26,9 +26,9 @@ class NeuralNetwork:
 
         """
         self.model = tf.keras.Sequential(name='grayboxann')
-        self.model.add(tf.keras.Input(shape=(3,)))
-        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer1'))
-        self.model.add(tf.keras.layers.Dense(10, activation='softplus', name='hiddenlayer2'))
+        self.model.add(tf.keras.Input(shape=(3,), name='inputlayer'))
+        self.model.add(tf.keras.layers.Dense(10, activation='sigmoid', name='hiddenlayer1'))
+        self.model.add(tf.keras.layers.Dense(10, activation='sigmoid', name='hiddenlayer2'))
         self.model.add(tf.keras.layers.Dense(1, activation='sigmoid', name='outputlayer'))
 
         self.model.compile(optimizer='adam',
@@ -61,6 +61,15 @@ class NeuralNetwork:
         """
         :return:
         """
+        
+        # print("x_train: ") 
+        # print(self.x_train)
+        # print("x_test: ") 
+        # print(self.x_test)
+        # print("y_train: ") 
+        # print(self.y_train)
+        # print("y_test: ")
+        # print(self.y_test)
 
         x = tf.convert_to_tensor(self.x_train)
         y = tf.convert_to_tensor(self.y_train)
@@ -131,3 +140,4 @@ class NeuralNetwork:
         x2 = self.model.predict(self.x_test)
 
         return x1, x2
+
