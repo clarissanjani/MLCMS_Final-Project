@@ -52,14 +52,16 @@ class SIR:
         
         S, I, R = y[:]
         
-        prediction_input = np.zeros((1, 3), dtype = 'float32')
-        prediction_input[0][0] = S
-        prediction_input[0][1] = I
-        prediction_input[0][2] = R
+        m = ann.model.predict(y)
+        
+        #prediction_input = np.zeros((1, 3), dtype = 'float32')
+        #prediction_input[0][0] = S
+        #prediction_input[0][1] = I
+        #prediction_input[0][2] = R
 
         dSdt = self.A - self.d * S - (self.beta * S * I) / (S + I + R)
-        dIdt = - (self.d + self.nu) * I - ann.model.predict(prediction_input)[0][0] + (self.beta * S * I) / (S + I + R)
-        dRdt = ann.model.predict(prediction_input)[0][0] - self.d * R
+        dIdt = - (self.d + self.nu) * I - m + (self.beta * S * I) / (S + I + R)
+        dRdt = m - self.d * R
 
         return np.array([dSdt, dIdt, dRdt])
 
