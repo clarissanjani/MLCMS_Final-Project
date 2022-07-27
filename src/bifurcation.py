@@ -3,6 +3,13 @@ import numpy as np
 from scipy import integrate
 import math
 
+
+def logistic_map(x, r):
+    """
+    Returns the population for a given population of x(t) and a given parameter r
+    """
+    return 2 * x - x **(r + 1)
+
 """
 define system in terms of separated differential equations
 d/dt x = f(x,y)
